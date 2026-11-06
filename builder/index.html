@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Builder 2.1</title>
+<style>
+:root{--bg:#f5f5f5;--panel:#fff;--text:#1f2328;--muted:#667085;--border:#d0d5dd;--accent:#2563eb}
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI","Hiragino Sans",Meiryo,sans-serif}button,input,select{font:inherit}button{cursor:pointer}.app{min-height:100%;display:grid;grid-template-rows:auto minmax(0,1fr)}header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--border)}.brand{font-size:15px;font-weight:700}.actions{display:flex;gap:6px;flex-wrap:wrap}.btn{border:1px solid var(--border);background:#fff;color:var(--text);padding:8px 10px;border-radius:6px;font-size:12px}.btn:hover{background:#f2f4f7}.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}.workspace{min-height:0;display:grid;grid-template-columns:minmax(360px,520px) minmax(0,1fr)}.sidebar{overflow:auto;padding:12px;border-right:1px solid var(--border);background:#fafafa}.preview-wrap{min-width:0;min-height:0;padding:12px;background:#eceff3}.preview{width:100%;height:100%;min-height:600px;background:#fff;border:1px solid var(--border)}iframe{width:100%;height:100%;min-height:600px;border:0;background:#fff}.section{background:#fff;border:1px solid var(--border);padding:12px;margin-bottom:10px}.section h2{margin:0 0 10px;font-size:13px}.label{display:block;margin:10px 0 4px;font-size:11px;color:var(--muted)}.input{width:100%;min-height:38px;border:1px solid var(--border);border-radius:5px;padding:7px 8px;background:#fff;color:var(--text);outline:none}.input:focus{border-color:var(--accent);box-shadow:0 0 0 2px rgba(37,99,235,.12)}.row{display:flex;gap:6px;align-items:center}.row>.input{flex:1}.small{font-size:11px;line-height:1.5;color:var(--muted)}.switch{appearance:none;width:38px;height:22px;border-radius:999px;background:#c7cdd4;position:relative;border:0}.switch:after{content:"";position:absolute;width:16px;height:16px;left:3px;top:3px;border-radius:50%;background:#fff;transition:.15s}.switch:checked{background:var(--accent)}.switch:checked:after{left:19px}.category-box{border:1px solid var(--border);background:#fff;padding:8px;margin-top:8px}.category-head{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:6px;align-items:center;padding-bottom:8px;border-bottom:1px solid #eaecf0}.category-links{display:grid;gap:6px;padding-top:8px}.category-actions,.link-actions{display:flex;gap:5px;flex-wrap:wrap}.category-actions .btn,.link-actions .btn{padding:6px 8px}.link-item{border:1px solid #e4e7ec;background:#fafafa;padding:8px}.link-item .row + .row{margin-top:6px}.highlight-row{display:grid;grid-template-columns:auto 1fr 44px;gap:6px;align-items:center;margin-top:7px}.highlight-row label{font-size:11px;color:var(--muted)}.highlight-color{width:44px;height:34px;border:1px solid var(--border);padding:2px;background:#fff}.link-meta{display:flex;justify-content:space-between;gap:8px;align-items:center;margin-top:6px}.drag-handle{border:1px solid var(--border);background:#fff;color:#667085;border-radius:5px;min-width:34px;min-height:34px;display:inline-grid;place-items:center;cursor:grab;touch-action:none;user-select:none}.dragging{opacity:.4}.drag-over-category{outline:2px solid var(--accent);outline-offset:1px}.drag-over-link{border-color:var(--accent)!important}.mobile-tabs{display:none}@media(max-width:900px){.app{grid-template-rows:auto minmax(0,1fr) 54px}header{align-items:flex-start;flex-direction:column;padding:10px}.actions{width:100%;flex-wrap:nowrap;overflow-x:auto}.actions .btn{flex:0 0 auto;min-height:40px}.workspace{display:block;min-height:0;overflow:hidden}.sidebar{height:100%;border-right:0;overflow:auto;padding:8px}.preview-wrap{height:100%;padding:6px}body.mobile-preview .sidebar{display:none}body:not(.mobile-preview) .preview-wrap{display:none}.mobile-tabs{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:6px 8px;border-top:1px solid var(--border);background:#fff}.mobile-tab{min-height:40px;border:1px solid var(--border);background:#fff;color:var(--muted);border-radius:5px}.mobile-tab.active{background:var(--accent);border-color:var(--accent);color:#fff}.input{min-height:44px;font-size:16px}.category-head{grid-template-columns:auto minmax(0,1fr)}.category-actions{grid-column:1/-1}.drag-handle{min-width:44px;min-height:44px}.link-meta{align-items:flex-start;flex-direction:column}.link-actions{width:100%}}
+
+/* Builder 2.1 */
+:root{color-scheme:dark;--bg:#0c111b;--panel:#151d2a;--text:#e7edf6;--muted:#9aaac0;--border:#334155;--accent:#60a5fa}
+.app{height:100dvh;min-height:0;overflow:hidden}header,.section,.category-box,.input,.btn,.drag-handle,.mobile-tabs{background:var(--panel);color:var(--text)}header{padding:14px}.version{font-size:12px;color:var(--accent);margin-left:8px}.sidebar{background:#101725}.preview-wrap{background:#080d16}.preview,iframe{min-height:0}.link-item{background:#101725;border-color:var(--border)}.category-head{border-color:var(--border)}.btn:hover{background:#253349}.btn:disabled{opacity:.4;cursor:default}.btn.primary,.mobile-tab.active{color:#081220}.highlight-color{background:var(--panel)}.mobile-tab{background:var(--panel)}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.input[aria-invalid="true"]{border-color:#fb7185}.statusbar{font-size:12px;color:var(--muted);margin:8px 0;min-height:18px}.statusbar.error{color:#fda4af}.category-actions,.link-actions{gap:6px}.preview-wrap{overflow:hidden}.preview{height:100%;overflow:hidden}.switch:focus-visible{outline:2px solid var(--accent)}
+@media(max-width:900px){header{gap:6px}.actions{flex-wrap:wrap;overflow:visible}.actions .btn{min-height:36px;padding:6px 8px}.workspace{overflow:hidden}.preview-wrap{overflow:hidden}.mobile-tabs{position:relative}.app{grid-template-rows:auto minmax(0,1fr) 54px}.sidebar{overscroll-behavior:contain}}
+</style>
+</head>
+<body>
+<div class="app">
+  <header>
+    <div class="brand">Dashboard Builder <span class="version">2.1</span></div>
+    <div class="actions">
+      <button class="btn" id="resetBtn">初期化</button><button class="btn" id="undoBtn" disabled>元に戻す</button>
+      <button class="btn" id="importBtn">読み込み</button>
+      <button class="btn" id="exportJsonBtn">JSON保存</button>
+      <button class="btn primary" id="exportHtmlBtn">HTML出力</button>
+      <input type="file" id="fileInput" accept=".json,.html,.htm,application/json,text/html" hidden>
+    </div>
+  </header>
+
+  <div class="workspace">
+    <aside class="sidebar">
+      <div class="small">設定は自動保存され、プレビューに反映されます。</div><div id="saveStatus" class="statusbar" role="status" aria-live="polite"></div>
+      <section class="section">
+        <h2>基本設定</h2>
+        <label class="label" for="weatherLabel">天気の表示名</label>
+        <input class="input" id="weatherLabel">
+
+        <label class="label" for="latitude">緯度</label>
+        <input class="input" id="latitude" type="number" min="-90" max="90" step="any">
+
+        <label class="label" for="longitude">経度</label>
+        <input class="input" id="longitude" type="number" min="-180" max="180" step="any">
+
+        <label class="label" for="outputFilename">出力ファイル名</label>
+        <input class="input" id="outputFilename" type="text" placeholder="index.html" autocomplete="off">
+        <div class="small" style="margin-top:6px">空欄なら <strong>index.html</strong> で出力します。.html は省略できます。</div>
+        <div class="small" style="margin-top:8px">上部の Import から、このBuilderのJSONまたは、このBuilderで出力したHTMLを再読み込みできます。</div>
+        <div id="importStatus" role="status" aria-live="polite" class="small" style="margin-top:8px"></div>
+        <div class="small" style="margin-top:8px">出力したダッシュボード右下の目立たない <strong>↓</strong> から、再編集可能な同形式の <strong>index.html</strong> を保存できます。</div>
+      </section>
+
+      <section class="section">
+        <h2>時計・検索</h2>
+        <label class="label" for="clockLocale">表示言語</label><select id="clockLocale" class="input"><option value="en-US">English</option><option value="ja-JP">日本語</option><option value="en-GB">English (UK)</option></select>
+        <label class="label" for="clockFormat">時刻の形式</label><select id="clockFormat" class="input"><option value="24">24時間制</option><option value="12">12時間制</option></select>
+        <label class="label" for="clockSeconds"><input id="clockSeconds" type="checkbox"> 秒を表示</label>
+        <label class="label" for="searchEngine">検索エンジン</label><select id="searchEngine" class="input"><option value="https://www.google.com/search?q=">Google</option><option value="https://www.bing.com/search?q=">Bing</option><option value="https://duckduckgo.com/?q=">DuckDuckGo</option><option value="custom">カスタム</option></select>
+        <label class="label" for="searchCustom">カスタム検索URL（検索語を末尾に追加）</label><input id="searchCustom" class="input" type="url" placeholder="https://example.com/search?q=">
+      </section>
+      <section class="section">
+        <div class="row" style="justify-content:space-between">
+          <h2 style="margin:0">リンク</h2>
+          <button class="btn" id="addCategoryBtn" type="button">＋ カテゴリ</button>
+        </div>
+        <div id="linkGroups"></div>
+      </section>
+    </aside>
+
+    <main class="preview-wrap">
+      <div class="preview"><iframe id="previewFrame" title="Dashboard preview"></iframe></div>
+    </main>
+  </div>
+
+  <nav class="mobile-tabs" aria-label="Mobile view switcher">
+    <button id="mobileEditTab" class="mobile-tab active" type="button">編集</button>
+    <button id="mobilePreviewTab" class="mobile-tab" type="button">プレビュー</button>
+  </nav>
+</div>
+
+<script>
+const STORAGE_KEY = "dashboardBuilderConfigV2";
+const LEGACY_STORAGE_KEY = "dashboardBuilderConfigV1";
+
+const DEFAULT_CONFIG = {
+  clock:{locale:"en-US",showSeconds:false,hour12:false},
+  weather:{label:"Tokyo",latitude:35.6598,longitude:139.7024},
+  search:{engine:"https://www.google.com/search?q="},
+  builder:{outputFilename:""},
+  linkGroups:[
+    {name:"Daily",links:[
+      ["YouTube","https://youtube.com/"],
+      ["Drive","https://drive.google.com/"],
+      ["Gemini","https://gemini.google.com/"],
+      ["Keep","https://keep.google.com/"],
+      ["GitHub","https://github.com/"],
+      ["Translate","https://translate.google.com/"],
+      ["Amazon","https://www.amazon.co.jp/"]
+    ]},
+    {name:"Tools",links:[
+      ["Home Page","https://kentaro222.github.io/KENTARO-S-HOME-PAGE/"],
+      ["Weather","https://kentaro222.github.io/Today-Tomorrow-Weather/"],
+      ["Time Tools","https://kentaro222.github.io/Stage-Time-Toolkit/"],
+      ["Stage Tools","https://kentaro222.github.io/Stage-Tools/"],
+      ["QR Code","https://kentaro222.github.io/QR-Code-Generation-and-Saver/"],
+      ["Image editing","https://kentaro222.github.io/Image-editing-tools/"],
+      ["DotFixer","https://kentaro222.github.io/DotFixer/"],
+      ["Air fryer","https://kentaro222.github.io/Air-fryer-conversion-tool"]
+    ]},
+    {name:"Games & Creative",links:[
+      ["PIXEL TAROT","https://kentaro222.github.io/PIXEL-TAROT/"],
+      ["BIG CHEESE","https://kentaro222.github.io/The-Big-Cheese-Single-Player/"],
+      ["Suzume-jong","https://kentaro222.github.io/4nin-uchi-Suzume-jong/"],
+      ["Retro VideoPoker","https://kentaro222.github.io/Retro-VideoPoker/"],
+      ["REGICIDE","https://kentaro222.github.io/Regicide-Single-Player/"],
+      ["Derby Mice","https://kentaro222.github.io/Derby-for-Mice/"],
+      ["Synth-Zooo","https://kentaro222.github.io/Synth-Zooo/"],
+      ["Pixel Run","https://kentaro222.github.io/Pixel-Run/"],
+      ["CHILL WALK","https://kentaro222.github.io/CHILL-WALK-Synthwave/"],
+      ["Music Visualizer","https://kentaro222.github.io/Pixel-Mascot-Music-Visualizer/"],
+      ["Ghost-Stairs","https://kentaro222.github.io/Ghost-Stairs/"]
+    ]}
+  ]
+};
+
+const resetBtn=document.getElementById("resetBtn");
+const importBtn=document.getElementById("importBtn");
+const exportJsonBtn=document.getElementById("exportJsonBtn");
+const exportHtmlBtn=document.getElementById("exportHtmlBtn");
+const fileInput=document.getElementById("fileInput");
+const importStatus=document.getElementById("importStatus");
+const weatherLabel=document.getElementById("weatherLabel");
+const latitude=document.getElementById("latitude");
+const longitude=document.getElementById("longitude");
+const outputFilename=document.getElementById("outputFilename");
+const addCategoryBtn=document.getElementById("addCategoryBtn");
+const linkGroups=document.getElementById("linkGroups");
+const previewFrame=document.getElementById("previewFrame");
+
+const APP_VERSION="2.1", SCHEMA_VERSION=2;
+let loadWarning="";
+let config = loadConfig();
+config.appVersion="2.1";config.schemaVersion=2;
+
+function clone(v){return JSON.parse(JSON.stringify(v))}
+function validUrl(value){try{const u=new URL(value);return ["https:","http:"].includes(u.protocol)&&!!u.hostname}catch(_){return false}}
+function normalizeConfig(value){
+  if(!value || typeof value!=="object" || Array.isArray(value)) throw new Error("設定はオブジェクトである必要があります。");
+  const v=value, base=clone(DEFAULT_CONFIG);
+  if(v.schemaVersion!==undefined && (!Number.isInteger(v.schemaVersion)||v.schemaVersion<1||v.schemaVersion>SCHEMA_VERSION)) throw new Error("この設定形式には対応していません。");
+  for(const key of ["clock","weather","search","builder"]){if(v[key]!==undefined && (!v[key]||typeof v[key]!=="object"||Array.isArray(v[key])))throw new Error(key+" の形式が不正です。");base[key]={...base[key],...(v[key]||{})};}
+  const c=base;
+  for(const [key,min,max] of [["latitude",-90,90],["longitude",-180,180]]){if(typeof c.weather[key]!=="number"||!Number.isFinite(c.weather[key])||c.weather[key]<min||c.weather[key]>max)throw new Error(key+" は "+min+"〜"+max+" の数値を指定してください。");}
+  if(typeof c.weather.label!=="string"||typeof c.builder.outputFilename!=="string")throw new Error("表示名・ファイル名は文字列を指定してください。");
+  try{new Intl.DateTimeFormat(c.clock.locale)}catch(_){throw new Error("時計の言語が不正です。");}
+  if(typeof c.clock.locale!=="string"||typeof c.clock.showSeconds!=="boolean"||typeof c.clock.hour12!=="boolean")throw new Error("時計の設定が不正です。");
+  if(typeof c.search.engine!=="string"||!validUrl(c.search.engine))throw new Error("検索URLは http / https の有効なURLを指定してください。");
+  const groups=v.linkGroups===undefined?base.linkGroups:v.linkGroups;
+  if(!Array.isArray(groups))throw new Error("カテゴリは配列である必要があります。");
+  c.linkGroups=groups.map(g=>{
+    if(!g||typeof g!=="object"||typeof g.name!=="string"||!Array.isArray(g.links))throw new Error("カテゴリの名前・リンク一覧が不正です。");
+    return {name:g.name,links:g.links.map(raw=>{
+      const x=Array.isArray(raw)?{label:raw[0],url:raw[1]}:raw;
+      if(!x||typeof x.label!=="string"||typeof x.url!=="string"||!validUrl(x.url))throw new Error("リンク名またはURLが不正です。http / https のURLを指定してください。");
+      if(x.highlight!==undefined&&typeof x.highlight!=="boolean")throw new Error("強調表示の設定が不正です。");
+      const color=x.useAccentColor?(v.theme?.accent||"#9ecbff"):(x.highlightColor||"#9ecbff");
+      if(typeof color!=="string"||!/^#[0-9a-f]{6}$/i.test(color))throw new Error("強調色は6桁のカラーコードを指定してください。");
+      return {label:x.label,url:x.url,highlight:!!x.highlight,highlightColor:color};
+    })};
+  });
+  c.appVersion=APP_VERSION;c.schemaVersion=SCHEMA_VERSION;return c;
+}
+function loadConfig(){
+  try{
+    const s=localStorage.getItem(STORAGE_KEY)||localStorage.getItem(LEGACY_STORAGE_KEY);
+    return s ? normalizeConfig(JSON.parse(s)) : normalizeConfig(clone(DEFAULT_CONFIG));
+  }catch(e){loadWarning="保存設定を読み込めませんでした。元データは上書きしていません。JSON読み込み、または初期化で復旧してください。";return normalizeConfig(clone(DEFAULT_CONFIG))}
+}
+function status(message,error=false){const el=document.getElementById("saveStatus");el.textContent=message;el.classList.toggle("error",error)}
+function save(){
+  if(loadWarning){status(loadWarning,true);return false}
+  try{normalizeConfig(config)}catch(e){status("入力内容を確認してください。最後に保存できた設定は保持しています。",true);return false}
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(config));status("保存済み");return true}catch(e){status("自動保存できません。JSON保存で設定を保管してください。",true);return false}
+}
+const history=[];
+function checkpoint(){history.push(clone(config));if(history.length>50)history.shift();document.getElementById("undoBtn").disabled=false}
+document.getElementById("undoBtn").onclick=()=>{if(!history.length)return;config=history.pop();document.getElementById("undoBtn").disabled=!history.length;renderControls();const saved=save();renderPreview();if(saved)status("変更を元に戻しました")};
+function validateControls(){return [...document.querySelectorAll('[aria-invalid="true"]')].length===0}
+function finishChange(){save();renderPreview();if(!validateControls())status("入力エラーがあります。赤枠の項目を確認してください。",true)}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"}[c]));
+}
+function debounce(fn,ms=120){
+  let t; return (...a)=>{clearTimeout(t);t=setTimeout(()=>fn(...a),ms)}
+}
+const rerender = debounce(finishChange,180);
+
+function renderControls(){
+  weatherLabel.value=config.weather.label;
+  latitude.value=config.weather.latitude;
+  longitude.value=config.weather.longitude;
+  outputFilename.value=(config.builder && config.builder.outputFilename) || "";
+
+  const locale=document.getElementById("clockLocale");
+  if(![...locale.options].some(o=>o.value===config.clock.locale)){const o=new Option(config.clock.locale,config.clock.locale);locale.add(o)}
+  locale.value=config.clock.locale;document.getElementById("clockFormat").value=config.clock.hour12?"12":"24";
+  document.getElementById("clockSeconds").checked=config.clock.showSeconds;
+  const engine=document.getElementById("searchEngine");engine.value=[...engine.options].some(o=>o.value===config.search.engine)?config.search.engine:"custom";
+  document.getElementById("searchCustom").value=config.search.engine;document.getElementById("searchCustom").disabled=engine.value!=="custom";
+  document.querySelectorAll('[aria-invalid]').forEach(e=>e.removeAttribute('aria-invalid'));
+  renderリンク();
+}
+
+
+
+function renderリンク(){
+  linkGroups.innerHTML="";
+
+  config.linkGroups.forEach((g,gi)=>{
+    const box=document.createElement("section");
+    box.className="category-box draggable-category";
+    box.dataset.categoryIndex=gi;
+
+    box.innerHTML=`
+      <div class="category-head">
+        <button class="drag-handle category-drag" type="button" data-drag-category="${gi}" aria-label="カテゴリをドラッグして移動">⋮⋮</button>
+        <input class="input" value="${esc(g.name)}" data-category-name="${gi}" aria-label="カテゴリ名">
+        <div class="category-actions">
+          <button class="btn" type="button" data-category-up="${gi}" ${gi===0?"disabled":""} aria-label="カテゴリを上に移動">↑</button><button class="btn" type="button" data-category-down="${gi}" ${gi===config.linkGroups.length-1?"disabled":""} aria-label="カテゴリを下に移動">↓</button><button class="btn" type="button" data-add-link="${gi}">＋ リンク</button>
+          <button class="btn" type="button" data-category-remove="${gi}" ${config.linkGroups.length===1?"disabled":""}>削除</button>
+        </div>
+      </div>
+      <div class="category-links" data-category-links="${gi}"></div>
+    `;
+
+    const linksContainer=box.querySelector(".category-links");
+
+    g.links.forEach((link,li)=>{
+      const item=document.createElement("article");
+      item.className="link-item draggable-link";
+      item.dataset.groupIndex=gi;
+      item.dataset.linkIndex=li;
+
+      item.innerHTML=`
+        <div class="row">
+          <button class="drag-handle" type="button" data-drag-link="${gi}:${li}" aria-label="リンクをドラッグして移動">⋮⋮</button>
+          <input class="input" value="${esc(link.label)}" data-link-label="${gi}:${li}" placeholder="リンク名" aria-label="リンク名">
+        </div>
+
+        <div class="row">
+          <input class="input" value="${esc(link.url)}" data-link-url="${gi}:${li}" placeholder="https://..." aria-label="リンクURL">
+        </div>
+
+        <div class="highlight-row">
+          <label for="highlight-${gi}-${li}">強調表示</label>
+          <input class="switch" id="highlight-${gi}-${li}" type="checkbox" data-link-highlight="${gi}:${li}" ${link.highlight?"checked":""}>
+          <input class="highlight-color" type="color"
+            value="${esc(link.highlightColor || "#9ecbff")}"
+            data-link-highlight-color="${gi}:${li}"
+            aria-label="リンクの強調色">
+        </div>
+
+        <div class="link-meta">
+          
+          <div class="link-actions">
+            <button class="btn" type="button" data-link-up="${gi}:${li}" ${li===0?"disabled":""} aria-label="リンクを上に移動">↑</button>
+            <button class="btn" type="button" data-link-down="${gi}:${li}" ${li===g.links.length-1?"disabled":""} aria-label="リンクを下に移動">↓</button>
+            <select class="input" data-link-group="${gi}:${li}" aria-label="リンクの移動先カテゴリ">${config.linkGroups.map((other,oi)=>`<option value="${oi}" ${oi===gi?"selected":""}>${esc(other.name)}</option>`).join("")}</select>
+            <button class="btn" type="button" data-link-remove="${gi}:${li}">削除</button>
+          </div>
+        </div>
+      `;
+
+      linksContainer.appendChild(item);
+    });
+
+    if(g.links.length===0){
+      const empty=document.createElement("div");
+      empty.className="small empty-category";
+      empty.style.padding="12px 2px";
+      empty.textContent="ここにリンクをドロップ、または「＋ リンク」で追加。";
+      linksContainer.appendChild(empty);
+    }
+
+    linkGroups.appendChild(box);
+  });
+
+  document.querySelectorAll("[data-link-url]").forEach(t=>t.setAttribute("aria-invalid",String(!validUrl(t.value))));
+  bindDragAndDrop();
+}
+
+document.addEventListener("focusin",e=>{if(e.target.matches(".sidebar input,.sidebar select"))e.target.dataset.snapshot=JSON.stringify(config)});
+function recordEdit(t){if(t.dataset.snapshot){const before=JSON.parse(t.dataset.snapshot);if(JSON.stringify(before)!==JSON.stringify(config)){history.push(before);if(history.length>50)history.shift();document.getElementById("undoBtn").disabled=false;t.dataset.snapshot=JSON.stringify(config)}}}
+document.addEventListener("input",e=>{
+  const t=e.target;let handled=true;
+  t.removeAttribute("aria-invalid");
+  if(t.id==="weatherLabel")config.weather.label=t.value;
+  else if(t.id==="latitude"||t.id==="longitude"){
+    const n=Number(t.value),limit=t.id==="latitude"?90:180;
+    if(!t.value.trim()||!Number.isFinite(n)||Math.abs(n)>limit){t.setAttribute("aria-invalid","true");status("緯度は -90〜90、経度は -180〜180 で入力してください。",true);return}config.weather[t.id]=n;
+  }else if(t.id==="outputFilename")config.builder.outputFilename=t.value;
+  else if(t.id==="searchCustom"){
+    if(!validUrl(t.value)){t.setAttribute("aria-invalid","true");status("検索URLは有効な http / https のURLを入力してください。",true);return}config.search.engine=t.value;
+  }else if(t.dataset.categoryName!==undefined)config.linkGroups[Number(t.dataset.categoryName)].name=t.value;
+  else if(t.dataset.linkLabel){const [g,i]=t.dataset.linkLabel.split(":").map(Number);config.linkGroups[g].links[i].label=t.value}
+  else if(t.dataset.linkUrl){const [g,i]=t.dataset.linkUrl.split(":").map(Number);config.linkGroups[g].links[i].url=t.value;t.setAttribute("aria-invalid",String(!validUrl(t.value)))}
+  else if(t.dataset.linkHighlightColor){const [g,i]=t.dataset.linkHighlightColor.split(":").map(Number);config.linkGroups[g].links[i].highlightColor=t.value}
+  else handled=false;
+  if(handled)rerender();
+});
+document.addEventListener("change",e=>{
+  const t=e.target;
+  if(t.dataset.linkHighlight){const [g,i]=t.dataset.linkHighlight.split(":").map(Number);config.linkGroups[g].links[i].highlight=t.checked;rerender()}
+  else if(t.id==="clockLocale"){config.clock.locale=t.value;rerender()}
+  else if(t.id==="clockFormat"){config.clock.hour12=t.value==="12";rerender()}
+  else if(t.id==="clockSeconds"){config.clock.showSeconds=t.checked;rerender()}
+  else if(t.id==="searchEngine"){
+    document.getElementById("searchCustom").disabled=t.value!=="custom";
+    if(t.value!=="custom"){config.search.engine=t.value;document.getElementById("searchCustom").value=t.value;document.getElementById("searchCustom").removeAttribute("aria-invalid");rerender()}
+  }else if(t.dataset.linkGroup){const [g,i]=t.dataset.linkGroup.split(":").map(Number);if(g!==Number(t.value))moveLink(g,i,Number(t.value),config.linkGroups[Number(t.value)].links.length)}
+  if(!t.dataset.linkGroup)recordEdit(t);
+  if(t.dataset.categoryName!==undefined)document.querySelectorAll("[data-link-group]").forEach(select=>{config.linkGroups.forEach((g,i)=>{if(select.options[i])select.options[i].textContent=g.name})});
+});
+document.addEventListener("click",e=>{
+  const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.categoryUp!==undefined){moveCategory(Number(t.dataset.categoryUp),Number(t.dataset.categoryUp)-1);return}
+  if(t.dataset.categoryDown!==undefined){moveCategory(Number(t.dataset.categoryDown),Number(t.dataset.categoryDown)+1);return}
+  if(t.dataset.linkUp){const [g,i]=t.dataset.linkUp.split(":").map(Number);moveLink(g,i,g,i-1);return}
+  if(t.dataset.linkDown){const [g,i]=t.dataset.linkDown.split(":").map(Number);moveLink(g,i,g,i+2);return}
+  if(t.dataset.categoryRemove!==undefined){
+    const i=Number(t.dataset.categoryRemove);
+    if(config.linkGroups.length<=1) return;
+
+    const g=config.linkGroups[i];
+    const msg=g.links.length
+      ? `カテゴリ「${g.name}」と、その中のリンク${g.links.length}件を削除しますか？`
+      : `カテゴリ「${g.name}」を削除しますか？`;
+
+    if(confirm(msg)){
+      checkpoint();config.linkGroups.splice(i,1);
+      renderリンク();
+      rerender();
+    }
+    return;
+  }
+
+  if(t.dataset.addLink!==undefined){
+    const gi=Number(t.dataset.addLink);
+    checkpoint();config.linkGroups[gi].links.push({
+      label:"新しいリンク",
+      url:"https://example.com/",
+      highlight:false,
+      highlightColor:"#9ecbff"
+    });
+    renderリンク();
+    rerender();
+    return;
+  }
+
+  if(t.dataset.linkRemove){
+    const [gi,li]=t.dataset.linkRemove.split(":").map(Number);
+    checkpoint();config.linkGroups[gi].links.splice(li,1);
+    renderリンク();
+    rerender();
+    return;
+  }
+});
+
+let dragState=null;
+let dragHoldTimer=null;
+
+function clearDragVisuals(){
+  document.querySelectorAll(".dragging,.drag-over-category,.drag-over-link").forEach(el=>{
+    el.classList.remove("dragging","drag-over-category","drag-over-link");
+  });
+}
+
+function moveCategory(from,to){
+  if(from===to || from<0 || to<0) return;
+  if(!config.linkGroups[from]||to>=config.linkGroups.length)return;
+  checkpoint();const [item]=config.linkGroups.splice(from,1);
+  config.linkGroups.splice(to,0,item);
+  renderリンク();
+  rerender();
+}
+
+function moveLink(fromGroup,fromIndex,toGroup,toIndex){
+  if(!Number.isInteger(fromGroup)||!Number.isInteger(toGroup)||!Number.isInteger(fromIndex)||!Number.isInteger(toIndex)||fromGroup<0||toGroup<0)return;
+  const source=config.linkGroups[fromGroup]?.links;
+  const target=config.linkGroups[toGroup]?.links;
+  if(!source || !target || !source[fromIndex]) return;
+
+  if(fromGroup===toGroup && (toIndex===fromIndex || toIndex===fromIndex+1))return;
+  checkpoint();const [link]=source.splice(fromIndex,1);
+
+  // If moving within the same group, removal shifts later indexes.
+  if(fromGroup===toGroup && toIndex>fromIndex) toIndex--;
+
+  toIndex=Math.max(0,Math.min(toIndex,target.length));
+  target.splice(toIndex,0,link);
+
+  renderリンク();
+  rerender();
+}
+
+function resolveDropTarget(x,y){
+  const el=document.elementFromPoint(x,y);
+  if(!el) return null;
+
+  const link=el.closest(".draggable-link");
+  if(link){
+    const rect=link.getBoundingClientRect();
+    return {
+      type:"link",
+      group:Number(link.dataset.groupIndex),
+      index:Number(link.dataset.linkIndex),
+      after:y > rect.top + rect.height/2,
+      el:link
+    };
+  }
+
+  const categoryリンク=el.closest(".category-links");
+  if(categoryリンク){
+    return {
+      type:"category-links",
+      group:Number(categoryリンク.dataset.categoryLinks),
+      el:categoryリンク
+    };
+  }
+
+  const category=el.closest(".draggable-category");
+  if(category){
+    const rect=category.getBoundingClientRect();
+    return {
+      type:"category",
+      index:Number(category.dataset.categoryIndex),
+      after:y > rect.top + rect.height/2,
+      el:category
+    };
+  }
+
+  return null;
+}
+
+function bindDragAndDrop(){
+  document.querySelectorAll("[data-drag-category]").forEach(handle=>{
+    handle.addEventListener("pointerdown",startPointerDrag);
+  });
+  document.querySelectorAll("[data-drag-link]").forEach(handle=>{
+    handle.addEventListener("pointerdown",startPointerDrag);
+  });
+}
+
+function startPointerDrag(e){
+  if(e.button!==undefined && e.button!==0) return;
+
+  const handle=e.currentTarget;
+  const isCategory=handle.dataset.dragCategory!==undefined;
+
+  const candidate={
+    pointerId:e.pointerId,
+    type:isCategory?"category":"link",
+    startX:e.clientX,
+    startY:e.clientY,
+    activated:false,
+    handle
+  };
+
+  if(isCategory){
+    candidate.fromCategory=Number(handle.dataset.dragCategory);
+    candidate.sourceEl=handle.closest(".draggable-category");
+  }else{
+    const [g,i]=handle.dataset.dragLink.split(":").map(Number);
+    candidate.fromGroup=g;
+    candidate.fromIndex=i;
+    candidate.sourceEl=handle.closest(".draggable-link");
+  }
+
+  if(dragState)cancelDrag();
+  dragState=candidate;
+  try{handle.setPointerCapture(e.pointerId)}catch(_){}
+
+  // Brief hold avoids accidental drags while scrolling on mobile.
+  dragHoldTimer=setTimeout(()=>{
+    if(!dragState || dragState.pointerId!==e.pointerId) return;
+    dragState.activated=true;
+    dragState.sourceEl?.classList.add("dragging");
+    try{handle.setPointerCapture(e.pointerId)}catch(_){}
+  },180);
+
+  handle.addEventListener("pointermove",pointerDragMove);
+  handle.addEventListener("pointerup",pointerDragEnd);
+  handle.addEventListener("pointercancel",cancelDrag);
+  handle.addEventListener("lostpointercapture",cancelDrag);
+}
+
+function pointerDragMove(e){
+  if(!dragState || dragState.pointerId!==e.pointerId) return;
+
+  const dx=e.clientX-dragState.startX;
+  const dy=e.clientY-dragState.startY;
+  const distance=Math.hypot(dx,dy);
+
+  if(!dragState.activated && distance>12){
+    // For mouse, activate immediately. Touch keeps the small hold.
+    if(e.pointerType==="mouse"){
+      clearTimeout(dragHoldTimer);
+      dragState.activated=true;
+      dragState.sourceEl?.classList.add("dragging");
+    }else{
+      return;
+    }
+  }
+
+  if(!dragState.activated) return;
+  e.preventDefault();
+
+  clearDragVisuals();
+  dragState.sourceEl?.classList.add("dragging");
+
+  const target=resolveDropTarget(e.clientX,e.clientY);
+  dragState.target=target;
+
+  if(target?.type==="link"){
+    target.el.classList.add("drag-over-link");
+  }else if(target?.type==="category" || target?.type==="category-links"){
+    target.el.closest(".draggable-category")?.classList.add("drag-over-category");
+  }
+
+  dragState.x=e.clientX;dragState.y=e.clientY;
+  if(!dragState.scrollFrame)dragState.scrollFrame=requestAnimationFrame(autoScrollDrag);
+}
+function autoScrollDrag(){
+  if(!dragState)return;
+  const sidebar=document.querySelector(".sidebar"),r=sidebar.getBoundingClientRect(),y=dragState.y;
+  if(y<r.top+55)sidebar.scrollTop-=10;else if(y>r.bottom-55)sidebar.scrollTop+=10;
+  dragState.target=resolveDropTarget(dragState.x,y);
+  dragState.scrollFrame=requestAnimationFrame(autoScrollDrag);
+}
+function cleanupDrag(state){
+  clearTimeout(dragHoldTimer);cancelAnimationFrame(state.scrollFrame);
+  state.handle.removeEventListener("pointermove",pointerDragMove);
+  state.handle.removeEventListener("pointerup",pointerDragEnd);
+  state.handle.removeEventListener("pointercancel",cancelDrag);
+  state.handle.removeEventListener("lostpointercapture",cancelDrag);
+  try{state.handle.releasePointerCapture(state.pointerId)}catch(_){}clearDragVisuals();
+}
+function cancelDrag(){if(!dragState)return;const state=dragState;dragState=null;cleanupDrag(state)}
+function pointerDragEnd(e){
+  if(!dragState||dragState.pointerId!==e.pointerId)return;
+  const state=dragState;dragState=null;cleanupDrag(state);
+  if(e.type!=="pointerup")return;
+  if(state.activated)state.target=resolveDropTarget(e.clientX,e.clientY);
+  if(!state.activated || !state.target) return;
+
+  const t=state.target;
+
+  if(state.type==="category"){
+    {
+      const category=t.el.closest(".draggable-category"),r=category.getBoundingClientRect();
+      let to=Number(category.dataset.categoryIndex)+(e.clientY>r.top+r.height/2?1:0);
+      if(to>state.fromCategory) to--;
+      moveCategory(state.fromCategory,to);
+    }
+    return;
+  }
+
+  if(state.type==="link"){
+    if(t.type==="link"){
+      const toIndex=t.index + (t.after?1:0);
+      moveLink(state.fromGroup,state.fromIndex,t.group,toIndex);
+    }else if(t.type==="category-links"){
+      moveLink(state.fromGroup,state.fromIndex,t.group,config.linkGroups[t.group].links.length);
+    }else if(t.type==="category"){
+      moveLink(state.fromGroup,state.fromIndex,t.index,config.linkGroups[t.index].links.length);
+    }
+  }
+}
+
+addCategoryBtn.addEventListener("click",()=>{
+  checkpoint();config.linkGroups.push({name:"新しいカテゴリ",links:[]});
+  renderリンク();rerender();
+});
+
+resetBtn.addEventListener("click",()=>{
+  if(!confirm("設定を初期状態に戻しますか？")) return;
+  checkpoint();loadWarning="";config=normalizeConfig(clone(DEFAULT_CONFIG));save();renderControls();renderPreview();
+});
+
+function extractBalancedJsonObject(source,startIndex){
+  let i=startIndex;
+  while(i<source.length && /\s/.test(source[i])) i++;
+  if(source[i]!=="{") throw new Error("CONFIG JSON start not found");
+
+  let depth=0;
+  let inString=false;
+  let escaped=false;
+
+  for(let p=i;p<source.length;p++){
+    const ch=source[p];
+    if(inString){
+      if(escaped) escaped=false;
+      else if(ch==="\\") escaped=true;
+      else if(ch==='"') inString=false;
+      continue;
+    }
+    if(ch==='"'){
+      inString=true;
+      continue;
+    }
+    if(ch==="{") depth++;
+    else if(ch==="}"){
+      depth--;
+      if(depth===0) return source.slice(i,p+1);
+    }
+  }
+  throw new Error("CONFIG JSON end not found");
+}
+
+function extractConfigFromDashboardHtml(html){
+  const match=html.match(/<script\b[^>]*\bid=["']dashboard-config["'][^>]*>([\s\S]*?)<\/script\s*>/i);
+  if(match){
+    const parsed=JSON.parse(match[1].trim());
+    if(!parsed || typeof parsed!=="object" || !Array.isArray(parsed.linkGroups)) throw new Error("Invalid dashboard config");
+    return parsed;
+  }
+  const assignment=/\b(?:const|let|var)\s+CONFIG\s*=\s*/g;let found;
+  while((found=assignment.exec(html))){
+    const parsed=JSON.parse(extractBalancedJsonObject(html,found.index+found[0].length));
+    if(!parsed || typeof parsed!=="object" || !Array.isArray(parsed.linkGroups))throw new Error("Invalid dashboard config");
+    return parsed;
+  }
+  throw new Error("Dashboard config not found");
+}
+
+async function importBuilderFile(file){
+  const source=await file.text();
+  const lowerName=(file.name || "").toLowerCase();
+  if(lowerName.endsWith(".json") || file.type==="application/json"){
+    const parsed=JSON.parse(source);
+    if(!parsed || typeof parsed!=="object" || Array.isArray(parsed) || !Array.isArray(parsed.linkGroups)) throw new Error("Dashboard Builderの設定JSONではありません。");
+    return parsed;
+  }
+  if(lowerName.endsWith(".html") || lowerName.endsWith(".htm") || file.type==="text/html") return extractConfigFromDashboardHtml(source);
+  try{const p=JSON.parse(source);if(!p||!Array.isArray(p.linkGroups))throw new Error("設定JSONではありません");return p}catch(_){return extractConfigFromDashboardHtml(source)}
+}
+
+importBtn.addEventListener("click",()=>{
+  importStatus.textContent="";
+  fileInput.value="";
+  fileInput.click();
+});
+
+fileInput.addEventListener("change",async()=>{
+  const f=fileInput.files && fileInput.files[0];
+  if(!f) return;
+  importStatus.textContent="読み込み中...";
+  try{
+    const parsed=await importBuilderFile(f);
+    const next=normalizeConfig(parsed);checkpoint();loadWarning="";config=next;
+    if(/\.html?$/i.test(f.name) && config.builder && !String(config.builder.outputFilename || "").trim()) config.builder.outputFilename=f.name;
+    save();
+    renderControls();
+    renderPreview();
+    importStatus.textContent=`読み込み完了: ${f.name}（2.1形式）`;
+  }catch(e){
+    console.error(e);
+    importStatus.textContent="読み込み失敗: このBuilderのJSON、または対応HTMLを選んでください。";
+    alert("読み込めませんでした。\n\nこのDashboard BuilderのJSON、またはこのBuilderから出力したHTMLを選んでください。\n\n詳細: "+(e && e.message ? e.message : "Unknown error"));
+  }finally{
+    fileInput.value="";
+  }
+});
+
+function getOutputFilename(){
+  let name = ((config.builder && config.builder.outputFilename) || "").trim();
+  if(!name) return "index.html";
+
+  name = name.replace(/[\\/:*?"<>|]+/g, "-").replace(/^\.+/, "").trim();
+  if(!name) return "index.html";
+  if(!/\.html?$/i.test(name)) name += ".html";
+  return name;
+}
+
+function download(name,text,type){
+  const blob=new Blob([text],{type});
+  const a=document.createElement("a");
+  a.href=URL.createObjectURL(blob);a.download=name;document.body.appendChild(a);a.click();
+  setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},1000);
+}
+function exportChecked(html){try{if(!validateControls())throw new Error("入力エラーを修正してから出力してください。");const clean=normalizeConfig(config);download(html?getOutputFilename():"dashboard-config.json",html?generateDashboard(clean):JSON.stringify(clean,null,2),html?"text/html":"application/json")}catch(e){alert(e.message)}}
+exportJsonBtn.addEventListener("click",()=>exportChecked(false));
+exportHtmlBtn.addEventListener("click",()=>exportChecked(true));
+
+let previewReady=false;
+window.addEventListener("message",e=>{if(e.source===previewFrame.contentWindow&&e.data?.type==="dashboard-ready"){previewReady=true;previewFrame.contentWindow.postMessage({type:"dashboard-update",config},"*")}});
+function renderPreview(){if(previewReady)previewFrame.contentWindow.postMessage({type:"dashboard-update",config},"*");else if(!previewFrame.srcdoc)previewFrame.srcdoc=generateDashboard(config,true)}
+
+function dashboardRuntime(){
+  let CONFIG=JSON.parse(document.getElementById('dashboard-config').textContent);
+  const $=id=>document.getElementById(id);
+  let weatherKey='',weatherController=null,weatherSerial=0,weatherLast=0,linksKey='';
+  const safeUrl=value=>{try{const u=new URL(value);return ['http:','https:'].includes(u.protocol)?u.href:null}catch(_){return null}};
+  function clock(){const n=new Date();try{$('date').textContent=n.toLocaleDateString(CONFIG.clock.locale,{weekday:'long',month:'long',day:'numeric'}).toUpperCase();$('clock').textContent=n.toLocaleTimeString(CONFIG.clock.locale,{hour:'2-digit',minute:'2-digit',second:CONFIG.clock.showSeconds?'2-digit':undefined,hour12:CONFIG.clock.hour12})}catch(_){$('clock').textContent=n.toLocaleTimeString()}}
+  function wicon(code){if(code===0)return '☀';if(code<=3)return '⛅';if(code===45||code===48)return '🌫';if((code>=71&&code<=77)||code===85||code===86)return '❄';if(code>=95)return '⛈';if(code>=80&&code<=82)return '🌦';return '🌧'}
+  async function weather(force=false){
+    const w=CONFIG.weather,key=JSON.stringify(w);
+    if(!force&&key===weatherKey)return;
+    weatherKey=key;weatherLast=Date.now();weatherController?.abort();weatherController=new AbortController();
+    const serial=++weatherSerial,controller=weatherController;
+    $('weather').textContent=w.label+' · Loading weather...';
+    const timeout=setTimeout(()=>controller.abort(),12000);
+    try{
+      const r=await fetch('https://api.open-meteo.com/v1/forecast?latitude='+w.latitude+'&longitude='+w.longitude+'&current=temperature_2m,weather_code&timezone=auto',{signal:controller.signal});
+      if(!r.ok)throw new Error('HTTP '+r.status);
+      const d=await r.json();if(!d.current||!Number.isFinite(d.current.temperature_2m)||!Number.isFinite(d.current.weather_code))throw new Error('Invalid weather');
+      if(serial===weatherSerial)$('weather').textContent=wicon(d.current.weather_code)+'  '+w.label+'  '+Math.round(d.current.temperature_2m)+'°C';
+    }catch(e){if(serial===weatherSerial)$('weather').textContent=w.label+' · Weather unavailable（15分後に再試行）'}finally{clearTimeout(timeout)}
+  }
+  function renderLinks(){
+    const key=JSON.stringify(CONFIG.linkGroups);if(key===linksKey)return;linksKey=key;
+    const fragment=document.createDocumentFragment();let count=0;
+    for(const g of CONFIG.linkGroups){
+      const section=document.createElement('section');section.className='cat';
+      const title=document.createElement('div');title.className='catlabel';title.textContent=g.name;
+      const grid=document.createElement('div');grid.className='grid';
+      for(const x of g.links){const url=safeUrl(x.url),a=document.createElement(url?'a':'span');a.className='link'+(x.highlight?' highlighted':'');
+        if(url){a.href=url;a.target='_blank';a.rel='noopener noreferrer'}else{a.title='URLを編集してください';a.setAttribute('aria-disabled','true')}
+        if(x.highlight&&/^#[0-9a-f]{6}$/i.test(x.highlightColor||''))a.style.setProperty('--hl',x.highlightColor);
+        const dot=document.createElement('span');dot.className='dot';dot.setAttribute('aria-hidden','true');a.append(dot,document.createTextNode(x.label));grid.append(a);count++;
+      }
+      section.append(title,grid);fragment.append(section);
+    }
+    $('links').replaceChildren(fragment);$('count').textContent=count+' links';
+  }
+  function apply(c){CONFIG=c;$('dashboard-config').textContent=JSON.stringify(CONFIG).replace(/</g,'\\u003c');clock();renderLinks();weather()}
+  $('searchForm').onsubmit=e=>{e.preventDefault();const q=$('search').value.trim();if(q&&safeUrl(CONFIG.search.engine))window.open(CONFIG.search.engine+encodeURIComponent(q),'_blank','noopener,noreferrer')};
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible'&&Date.now()-weatherLast>15*60*1000)weather(true)});
+  $('secretExport').onclick=()=>{
+    try{
+      const page=document.documentElement.cloneNode(true);
+      page.querySelector('#dashboard-config').textContent=JSON.stringify(CONFIG).replace(/</g,'\\u003c');
+      page.querySelector('#links').replaceChildren();page.querySelector('#count').textContent='';
+      page.querySelector('#weather').textContent='Weather...';page.querySelector('#date').textContent='';page.querySelector('#clock').textContent='00:00';
+      const search=page.querySelector('#search');search.value='';search.removeAttribute('value');
+      const blob=new Blob(['<!DOCTYPE html>\n'+page.outerHTML],{type:'text/html;charset=utf-8'}),url=URL.createObjectURL(blob),a=document.createElement('a');
+      a.href=url;a.download='index.html';document.body.append(a);a.click();setTimeout(()=>{a.remove();URL.revokeObjectURL(url)},1000);
+    }catch(e){alert('index.html を出力できませんでした。')}
+  };
+  window.addEventListener('message',e=>{if(window.parent!==window&&e.source===window.parent&&e.data?.type==='dashboard-update'&&e.data.config)apply(e.data.config)});
+  apply(CONFIG);setInterval(clock,1000);setInterval(()=>{if(document.visibilityState==='visible')weather(true)},15*60*1000);
+  if(window.parent!==window)window.parent.postMessage({type:'dashboard-ready'},'*');
+}
+
+function generateDashboard(c,preview=false){
+const configJson=JSON.stringify({...c,appVersion:APP_VERSION,schemaVersion:SCHEMA_VERSION}).replace(/</g,"\\u003c");
+return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Dashboard</title>
+<meta name="generator" content="Dashboard Builder 2.1">
+<style>
+:root{--bg:#0a0d12;--panel:rgba(15,20,28,.58);--text:#f4f7fb;--muted:rgba(244,247,251,.62);--border:rgba(255,255,255,.09);--accent:#9ecbff;--radius:18px}
+*{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090c10;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI","Hiragino Sans",Meiryo,sans-serif}
+body{min-height:100vh;background:radial-gradient(circle at 20% 15%, #1e3550 0%, #101722 38%, #080b10 100%);background-size:cover;background-position:center;background-attachment:fixed}
+body:before{content:"";position:fixed;inset:0;background:linear-gradient(180deg,rgba(5,8,12,.28),rgba(5,8,12,.68));pointer-events:none;z-index:-1}
+button,input{font:inherit}button{color:inherit;cursor:pointer}
+.app{width:min(1180px,calc(100% - 32px));margin:auto;padding:28px 0 46px}
+.top{display:flex;justify-content:space-between;align-items:center}.weather{color:var(--muted);font-size:14px}
+.icon,.btn{border:1px solid var(--border);background:rgba(255,255,255,.055);border-radius:12px;padding:9px 11px;color:inherit}.icon{width:42px;height:42px}
+.hero{text-align:center;padding:34px 0 26px}.date{color:var(--muted);font-size:13px;letter-spacing:.15em}.clock{font-size:clamp(72px,13vw,150px);font-weight:200;letter-spacing:-.055em;font-variant-numeric:tabular-nums;line-height:.95;margin-top:10px}
+.searchw{max-width:720px;margin:28px auto 0}.search{width:100%;height:58px;border-radius:17px;border:1px solid var(--border);background:rgba(255,255,255,.07);color:white;outline:0;padding:0 18px}
+.layout{margin-top:28px}.card{background:var(--panel);border:1px solid var(--border);border-radius:var(--radius);backdrop-filter:blur(20px);box-shadow:0 18px 60px rgba(0,0,0,.28)}
+.links{padding:22px}.title{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}.title h2{font-size:14px;margin:0}.title span{font-size:11px;color:var(--muted)}
+.cat+ .cat{margin-top:22px}.catlabel{font-size:11px;color:var(--muted);letter-spacing:.12em;text-transform:uppercase;margin-bottom:9px}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(128px,1fr));gap:10px}
+.link{min-height:48px;padding:10px 12px;border-radius:13px;background:rgba(255,255,255,.045);color:white;text-decoration:none;display:flex;align-items:center;gap:10px;border:1px solid transparent;transition:.2s ease}.link:hover{background:rgba(255,255,255,.085);transform:translateY(-1px)}.link.highlighted{background:color-mix(in srgb,var(--hl) 18%,rgba(255,255,255,.045));border-color:color-mix(in srgb,var(--hl) 48%,transparent);box-shadow:0 0 0 1px color-mix(in srgb,var(--hl) 12%,transparent) inset,0 10px 28px color-mix(in srgb,var(--hl) 14%,transparent)}.link.highlighted .dot{background:var(--hl);box-shadow:0 0 14px color-mix(in srgb,var(--hl) 65%,transparent)}.link{overflow-wrap:anywhere;min-width:0}.dot{flex-shrink:0;width:8px;height:8px;border-radius:50%;background:var(--accent)}
+.secret-export{
+  position:fixed;
+  right:10px;
+  bottom:10px;
+  width:26px;
+  height:26px;
+  border:1px solid rgba(255,255,255,.08);
+  background:rgba(10,13,18,.22);
+  color:rgba(255,255,255,.18);
+  border-radius:9px;
+  display:grid;
+  place-items:center;
+  font-size:11px;
+  opacity:.28;
+  transition:.2s ease;
+  z-index:50;
+  backdrop-filter:blur(8px);
+}
+.secret-export:hover,
+.secret-export:focus{
+  opacity:.95;
+  color:rgba(255,255,255,.85);
+  border-color:rgba(255,255,255,.18);
+  background:rgba(20,26,34,.72);
+}
+@media(max-width:820px){
+  .app{width:min(100% - 22px,720px)}
+  .secret-export{right:7px;bottom:7px;width:24px;height:24px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+<div class="top"><div id="weather" class="weather" role="status">Weather...</div></div>
+<section class="hero"><div id="date" class="date"></div><div id="clock" class="clock">00:00</div><form id="searchForm" class="searchw"><input id="search" class="search" aria-label="ウェブ検索" placeholder="Search the web..." autocomplete="off"></form></section>
+<section class="layout">
+<div class="card links"><div class="title"><h2>Shortcuts</h2><span id="count"></span></div><div id="links"></div></div>
+</section>
+</main>
+
+<button id="secretExport" class="secret-export" type="button" title="Export index.html" aria-label="Export index.html">↓</button>
+
+<script id="dashboard-config" type="application/json">${configJson}<\/script>
+
+<script>
+(${dashboardRuntime.toString()})();
+<\/script>
+</body>
+</html>`;
+}
+
+const mobileEditTab = document.getElementById("mobileEditTab");
+const mobilePreviewTab = document.getElementById("mobilePreviewTab");
+
+function setMobileView(view){
+  const preview = view === "preview";
+  document.body.classList.toggle("mobile-preview", preview);
+  mobileEditTab.classList.toggle("active", !preview);mobileEditTab.setAttribute("aria-pressed",String(!preview));
+  mobilePreviewTab.classList.toggle("active", preview);mobilePreviewTab.setAttribute("aria-pressed",String(preview));
+  if(preview) renderPreview();
+}
+
+mobileEditTab.addEventListener("click",()=>setMobileView("edit"));
+mobilePreviewTab.addEventListener("click",()=>setMobileView("preview"));
+
+renderControls();
+save();
+renderPreview();
+setMobileView("edit");
+</script>
+</body>
+</html>
