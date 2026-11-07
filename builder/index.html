@@ -12,6 +12,11 @@
 :root{color-scheme:dark;--bg:#0c111b;--panel:#151d2a;--text:#e7edf6;--muted:#9aaac0;--border:#334155;--accent:#60a5fa}
 .app{height:100dvh;min-height:0;overflow:hidden}header,.section,.category-box,.input,.btn,.drag-handle,.mobile-tabs{background:var(--panel);color:var(--text)}header{padding:14px}.version{font-size:12px;color:var(--accent);margin-left:8px}.sidebar{background:#101725}.preview-wrap{background:#080d16}.preview,iframe{min-height:0}.link-item{background:#101725;border-color:var(--border)}.category-head{border-color:var(--border)}.btn:hover{background:#253349}.btn:disabled{opacity:.4;cursor:default}.btn.primary,.mobile-tab.active{color:#081220}.highlight-color{background:var(--panel)}.mobile-tab{background:var(--panel)}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:2px solid var(--accent);outline-offset:3px}.input[aria-invalid="true"]{border-color:#fb7185}.statusbar{font-size:12px;color:var(--muted);margin:8px 0;min-height:18px}.statusbar.error{color:#fda4af}.category-actions,.link-actions{gap:6px}.preview-wrap{overflow:hidden}.preview{height:100%;overflow:hidden}.switch:focus-visible{outline:2px solid var(--accent)}
 @media(max-width:900px){header{gap:6px}.actions{flex-wrap:wrap;overflow:visible}.actions .btn{min-height:36px;padding:6px 8px}.workspace{overflow:hidden}.preview-wrap{overflow:hidden}.mobile-tabs{position:relative}.app{grid-template-rows:auto minmax(0,1fr) 54px}.sidebar{overscroll-behavior:contain}}
+.highlight-presets{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.highlight-swatch{width:32px;height:32px;padding:6px;border:1px solid var(--border);border-radius:6px;background:var(--panel);display:grid;place-items:center}
+.highlight-swatch::before{content:"";width:100%;height:100%;border-radius:3px;background:var(--swatch)}
+.highlight-swatch[aria-pressed="true"]{border-color:var(--text);box-shadow:inset 0 0 0 1px var(--text)}
+@media(max-width:900px){.highlight-swatch{width:44px;height:44px}}
 </style>
 </head>
 <body>
@@ -80,6 +85,12 @@
 <script>
 const STORAGE_KEY = "dashboardBuilderConfigV2";
 const LEGACY_STORAGE_KEY = "dashboardBuilderConfigV1";
+
+const HIGHLIGHT_PRESETS = [
+  ["白", "#ffffff"], ["赤", "#ff0000"], ["オレンジ", "#ffa600"],
+  ["黄", "#ffff00"], ["緑", "#4ade80"], ["ミント", "#2dd4bf"],
+  ["水色", "#9ecbff"], ["青", "#60a5fa"], ["紫", "#c084fc"], ["ピンク", "#ff9ee0"]
+];
 
 const DEFAULT_CONFIG = {
   clock:{locale:"en-US",showSeconds:false,hour12:false},
@@ -260,6 +271,13 @@ function renderリンク(){
             aria-label="リンクの強調色">
         </div>
 
+        <div class="highlight-presets" role="group" aria-label="強調色のサンプル">
+          ${HIGHLIGHT_PRESETS.map(([name,color])=>`<button class="highlight-swatch" type="button"
+            data-link-highlight-preset="${gi}:${li}" data-color="${color}" style="--swatch:${color}"
+            title="${name}（${color}）" aria-label="強調色: ${name}"
+            aria-pressed="${(link.highlightColor || "#9ecbff").toLowerCase()===color}"></button>`).join("")}
+        </div>
+
         <div class="link-meta">
           
           <div class="link-actions">
@@ -289,6 +307,10 @@ function renderリンク(){
   bindDragAndDrop();
 }
 
+function syncHighlightPresets(item,color){
+  item.querySelectorAll("[data-link-highlight-preset]").forEach(button=>button.setAttribute("aria-pressed",String(button.dataset.color===color.toLowerCase())));
+}
+
 document.addEventListener("focusin",e=>{if(e.target.matches(".sidebar input,.sidebar select"))e.target.dataset.snapshot=JSON.stringify(config)});
 function recordEdit(t){if(t.dataset.snapshot){const before=JSON.parse(t.dataset.snapshot);if(JSON.stringify(before)!==JSON.stringify(config)){history.push(before);if(history.length>50)history.shift();document.getElementById("undoBtn").disabled=false;t.dataset.snapshot=JSON.stringify(config)}}}
 document.addEventListener("input",e=>{
@@ -304,7 +326,7 @@ document.addEventListener("input",e=>{
   }else if(t.dataset.categoryName!==undefined)config.linkGroups[Number(t.dataset.categoryName)].name=t.value;
   else if(t.dataset.linkLabel){const [g,i]=t.dataset.linkLabel.split(":").map(Number);config.linkGroups[g].links[i].label=t.value}
   else if(t.dataset.linkUrl){const [g,i]=t.dataset.linkUrl.split(":").map(Number);config.linkGroups[g].links[i].url=t.value;t.setAttribute("aria-invalid",String(!validUrl(t.value)))}
-  else if(t.dataset.linkHighlightColor){const [g,i]=t.dataset.linkHighlightColor.split(":").map(Number);config.linkGroups[g].links[i].highlightColor=t.value}
+  else if(t.dataset.linkHighlightColor){const [g,i]=t.dataset.linkHighlightColor.split(":").map(Number);config.linkGroups[g].links[i].highlightColor=t.value;syncHighlightPresets(t.closest(".link-item"),t.value)}
   else handled=false;
   if(handled)rerender();
 });
@@ -323,6 +345,14 @@ document.addEventListener("change",e=>{
 });
 document.addEventListener("click",e=>{
   const t=e.target.closest("button");if(!t)return;
+  if(t.dataset.linkHighlightPreset){
+    const [g,i]=t.dataset.linkHighlightPreset.split(":").map(Number),color=t.dataset.color;
+    if(config.linkGroups[g].links[i].highlightColor.toLowerCase()===color)return;
+    checkpoint();config.linkGroups[g].links[i].highlightColor=color;
+    const item=t.closest(".link-item");
+    item.querySelector("[data-link-highlight-color]").value=color;
+    syncHighlightPresets(item,color);rerender();return;
+  }
   if(t.dataset.categoryUp!==undefined){moveCategory(Number(t.dataset.categoryUp),Number(t.dataset.categoryUp)-1);return}
   if(t.dataset.categoryDown!==undefined){moveCategory(Number(t.dataset.categoryDown),Number(t.dataset.categoryDown)+1);return}
   if(t.dataset.linkUp){const [g,i]=t.dataset.linkUp.split(":").map(Number);moveLink(g,i,g,i-1);return}
@@ -761,6 +791,12 @@ return `<!DOCTYPE html>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard</title>
 <meta name="generator" content="Dashboard Builder 2.1">
+${preview ? "" : `<meta name="theme-color" content="#0a0d12">
+<link rel="icon" href="./favicon.ico" sizes="16x16 32x32 48x48">
+<link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+<link rel="icon" href="./icons/favicon-32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="./manifest.webmanifest">`}
 <style>
 :root{--bg:#0a0d12;--panel:rgba(15,20,28,.58);--text:#f4f7fb;--muted:rgba(244,247,251,.62);--border:rgba(255,255,255,.09);--accent:#9ecbff;--radius:18px}
 *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:#090c10;color:var(--text);font-family:Inter,system-ui,-apple-system,"Segoe UI","Hiragino Sans",Meiryo,sans-serif}
